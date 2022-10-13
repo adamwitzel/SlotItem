@@ -1,7 +1,10 @@
 import java.util.*;
 
 /*
-
+TODO Add recursive adds and removes
+TODO Fix some warnings
+TODO Consider/Add Core Tag
+TODO Add check for completeness
 
  */
 
@@ -75,7 +78,6 @@ public class SlotItem{
 
         outString += ("Values:      " + this.values + "\n");
         outString += ("TotalValues: " + this.totalValues + "\n");
-
 
         return outString;
     }
