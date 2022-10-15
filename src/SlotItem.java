@@ -97,13 +97,12 @@ public class SlotItem{
         //Check if slot is available
         if(this.getThisFreeSlots().contains(newItem.type)) {
             this.slotItems.add(newItem);
+            calcTotalValues();
+            return true;
         }
         else{
             return false;
         }
-
-        calcTotalValues();
-        return true;
     }
 
     //Remove Item from THIS item
@@ -111,13 +110,12 @@ public class SlotItem{
         if(this.slotItems.contains(item))
         {
             this.slotItems.remove(item);
+            calcTotalValues();
+            return true;
         }
         else{
             return false;
         }
-
-        calcTotalValues();
-        return true;
     }
 
     //Add Up total values and update
@@ -157,9 +155,9 @@ public class SlotItem{
             checkSlots.add(slot);
         }
 
-        for (SlotItem item: this.slotItems) {
-            if(checkSlots.contains(item.type)){
-                checkSlots.remove(item.type);
+        for (SlotItem subItem: this.slotItems) {
+            if(checkSlots.contains(subItem.type)){
+                checkSlots.remove(subItem.type);
             }
         }
 
@@ -177,8 +175,29 @@ public class SlotItem{
         }
         //Try to add to all subitems
         else{
-            for (SlotItem item: this.slotItems) {
-                if (item.addItemDeep(newItem)) {
+            for (SlotItem subItem: this.slotItems) {
+                if (subItem.addItemDeep(newItem)) {
+                    calcTotalValues();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //Attempts to remove item from this item or any subitem
+    public boolean removeItemDeep(SlotItem item){
+        //Try removing from THIS item
+        if(this.slotItems.contains(item))
+        {
+            this.slotItems.remove(item);
+            calcTotalValues();
+            return true;
+        }
+        //Otherwise recurse on each subitem
+        else{
+            for (SlotItem subItem: this.slotItems) {
+                if (subItem.removeItemDeep(item)) {
                     calcTotalValues();
                     return true;
                 }
@@ -215,7 +234,8 @@ public class SlotItem{
         System.out.println(S2 + "\n");
         System.out.println(S3 + "\n");
 
-        //Test adding and recalc of total values
+
+        /*
         System.out.println("Test adding and recalc of total values");
         System.out.println(S1);
         System.out.println(S2);
@@ -223,15 +243,23 @@ public class SlotItem{
         System.out.println(S1);
         S1.removeItem(S2);
         System.out.println(S1);
+        */
 
-        //Test adding deeply
+        /*
         System.out.println("Test adding and removing deeply");
         S1.addItem(S2);
-        System.out.println(S1.addItemDeep(S3));
+        S1.addItemDeep(S3);
 
         System.out.println(S1 + "\n");
         System.out.println(S2 + "\n");
         System.out.println(S3 + "\n");
+
+        System.out.println(S1.removeItemDeep(S3));
+
+        System.out.println(S1 + "\n");
+        System.out.println(S2 + "\n");
+        System.out.println(S3 + "\n");
+         */
 
 
 
