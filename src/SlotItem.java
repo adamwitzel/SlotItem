@@ -5,6 +5,7 @@ TODO Add recursive adds and removes
 TODO Fix some warnings
 TODO Consider/Add Core Tag
 TODO Add check for completeness
+TODO Add recursive total slots
 
  */
 
@@ -55,7 +56,6 @@ public class SlotItem{
     public HashMap<String, Integer> getValues(){
         return this.values;
     }
-
     public HashMap<String, Integer> getTotalValues(){
         return this.totalValues;
     }
@@ -91,29 +91,33 @@ public class SlotItem{
     }
 
 
-
-    //Public Methods
+    //Public Specific Methods
     //Try to add Item to THIS item if slot is available
-    public SlotItem addItem(SlotItem newItem){
+    public boolean addItem(SlotItem newItem){
+        //Check if slot is available
         if(this.getThisFreeSlots().contains(newItem.type)) {
             this.slotItems.add(newItem);
         }
+        else{
+            return false;
+        }
 
         calcTotalValues();
-        return newItem;
+        return true;
     }
 
     //Remove Item from THIS item
-    public void removeItem(SlotItem item){
+    public boolean removeItem(SlotItem item){
         if(this.slotItems.contains(item))
         {
             this.slotItems.remove(item);
         }
         else{
-            //throw error?
+            return false;
         }
 
         calcTotalValues();
+        return true;
     }
 
     //Add Up total values and update
@@ -162,7 +166,26 @@ public class SlotItem{
         return checkSlots;
     }
 
-
+    //Public Specific Methods Deep
+    //Try to add Item to this or any subitem if slot is available
+    public boolean addItemDeep(SlotItem newItem){
+        //Check if slot is available and add to THIS item
+        if(this.getThisFreeSlots().contains(newItem.type)) {
+            this.slotItems.add(newItem);
+            calcTotalValues();
+            return true;
+        }
+        //Try to add to all subitems
+        else{
+            for (SlotItem item: this.slotItems) {
+                if (item.addItemDeep(newItem)) {
+                    calcTotalValues();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
     public static void main(String[] args) {
@@ -181,18 +204,34 @@ public class SlotItem{
         valuesInit2.put("Agility", 5);
         SlotItem S2 = new SlotItem("Jeweled Pommel", "pommel", new String[]{"jewel"}, valuesInit2);
 
+        HashMap<String, Integer> valuesInit3 = new HashMap<String, Integer>();
+        valuesInit3.put("Health", 40);
+        valuesInit3.put("Attack", 10);
+        valuesInit3.put("Style", 8);
+        SlotItem S3 = new SlotItem("Rambunctious Ruby", "jewel", new String[]{}, valuesInit3);
 
-        System.out.println(S1.toString() + "\n");
-        System.out.println(S2.toString() + "\n");
+
+        System.out.println(S1 + "\n");
+        System.out.println(S2 + "\n");
+        System.out.println(S3 + "\n");
 
         //Test adding and recalc of total values
         System.out.println("Test adding and recalc of total values");
-        System.out.println(S1.toString());
-        System.out.println(S2.toString());
+        System.out.println(S1);
+        System.out.println(S2);
         S1.addItem(S2);
-        System.out.println(S1.toString());
+        System.out.println(S1);
         S1.removeItem(S2);
-        System.out.println(S1.toString());
+        System.out.println(S1);
+
+        //Test adding deeply
+        System.out.println("Test adding and removing deeply");
+        S1.addItem(S2);
+        System.out.println(S1.addItemDeep(S3));
+
+        System.out.println(S1 + "\n");
+        System.out.println(S2 + "\n");
+        System.out.println(S3 + "\n");
 
 
 
