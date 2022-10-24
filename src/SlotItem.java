@@ -1,11 +1,9 @@
 import java.util.*;
 
 /*
-TODO Add recursive adds and removes
 TODO Fix some warnings
 TODO Consider/Add Core Tag
 TODO Add check for completeness
-TODO Add recursive total slots
 
  */
 
@@ -71,10 +69,8 @@ public class SlotItem{
         outString += ("Slots:       " + this.slots + "\n");
         outString += ("FreeSlots:   " + this.getThisFreeSlots() + "\n");
 
-        outString += "SubItems: \n";
-        for (SlotItem item : slotItems) {
-            outString += "\t" + item.toStringSimple() + "\n";
-        }
+        outString += "Tree: \n";
+        outString += getTreeView();
 
         outString += ("Values:      " + this.values + "\n");
         outString += ("TotalValues: " + this.totalValues + "\n");
@@ -86,6 +82,16 @@ public class SlotItem{
         String outString = "";
 
         outString += "Item: " + this.title + ", " + this.type;
+
+        return outString;
+    }
+
+    public String getTreeView(){
+        String outString = (this.title + ", " + this.type + "\n");
+
+        for (SlotItem subItem: this.slotItems) {
+            outString += "\t" + subItem.getTreeView().replaceAll("\t", "\t\t");
+        }
 
         return outString;
     }
@@ -151,9 +157,8 @@ public class SlotItem{
     //Returns a list containing all available slots on THIS item
     public List<String> getThisFreeSlots(){
         List<String> checkSlots = new ArrayList<String>();
-        for (String slot : this.slots) {
-            checkSlots.add(slot);
-        }
+
+        checkSlots.addAll(this.slots);
 
         for (SlotItem subItem: this.slotItems) {
             if(checkSlots.contains(subItem.type)){
@@ -206,6 +211,22 @@ public class SlotItem{
         return false;
     }
 
+    //Returns list containing all free slots on this and subitems
+    public List<String> getTotalFreeSlots(){
+        //Add own free slots
+        //System.out.println(checkSlots);
+        List<String> checkSlots = new ArrayList<String>(this.getThisFreeSlots());
+        //System.out.println(checkSlots);
+        //System.out.println("::::::" + this.getThisFreeSlots());
+
+        //recurse through subitems and add their total free slots
+        for (SlotItem subItem: this.slotItems) {
+            checkSlots.addAll(subItem.getTotalFreeSlots());
+        }
+
+        return checkSlots;
+    }
+
 
     public static void main(String[] args) {
         System.out.println("TESTING: \n");
@@ -221,7 +242,7 @@ public class SlotItem{
         valuesInit2.put("Magic", 40);
         valuesInit2.put("Attack", 20);
         valuesInit2.put("Agility", 5);
-        SlotItem S2 = new SlotItem("Jeweled Pommel", "pommel", new String[]{"jewel"}, valuesInit2);
+        SlotItem S2 = new SlotItem("Jeweled Pommel", "pommel", new String[]{"jewel", "jewel"}, valuesInit2);
 
         HashMap<String, Integer> valuesInit3 = new HashMap<String, Integer>();
         valuesInit3.put("Health", 40);
@@ -235,17 +256,19 @@ public class SlotItem{
         System.out.println(S3 + "\n");
 
 
-        /*
+
         System.out.println("Test adding and recalc of total values");
         System.out.println(S1);
         System.out.println(S2);
+        System.out.println(":::::::::::::" + S1.getTotalFreeSlots());
         S1.addItem(S2);
         System.out.println(S1);
+        System.out.println(":::::::::::::" + S1.getTotalFreeSlots());
         S1.removeItem(S2);
         System.out.println(S1);
-        */
 
-        /*
+
+
         System.out.println("Test adding and removing deeply");
         S1.addItem(S2);
         S1.addItemDeep(S3);
@@ -259,7 +282,7 @@ public class SlotItem{
         System.out.println(S1 + "\n");
         System.out.println(S2 + "\n");
         System.out.println(S3 + "\n");
-         */
+
 
 
 
